@@ -71,12 +71,6 @@ const AppActions = Object.assign({}, BaseAppActions, {
       env,
     })
   },
-  deleteInvite(id) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.DELETE_INVITE,
-      id,
-    })
-  },
   deleteOrganisation() {
     Dispatcher.handleViewAction({
       actionType: Actions.DELETE_ORGANISATION,
@@ -200,28 +194,6 @@ const AppActions = Object.assign({}, BaseAppActions, {
       projectId,
     })
   },
-  getFeatures(
-    projectId,
-    environmentId,
-    force,
-    search,
-    sort,
-    page,
-    filter,
-    pageSize,
-  ) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.GET_FLAGS,
-      environmentId,
-      filter,
-      force,
-      page,
-      pageSize,
-      projectId,
-      search,
-      sort,
-    })
-  },
   getIdentity(envId, id) {
     Dispatcher.handleViewAction({
       actionType: Actions.GET_IDENTITY,
@@ -247,12 +219,6 @@ const AppActions = Object.assign({}, BaseAppActions, {
       link,
     })
   },
-  migrateProject(projectId) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.MIGRATE_PROJECT,
-      projectId,
-    })
-  },
   oauthLogin(oauthType, data) {
     Dispatcher.handleViewAction({
       actionType: Actions.OAUTH,
@@ -273,13 +239,6 @@ const AppActions = Object.assign({}, BaseAppActions, {
       force: true,
     })
   },
-  removeFlag(projectId, flag) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.REMOVE_FLAG,
-      flag,
-      projectId,
-    })
-  },
   removeUserFlag({ cb, environmentId, identity, identityFlag }) {
     Dispatcher.handleViewAction({
       actionType: Actions.REMOVE_USER_FLAG,
@@ -289,58 +248,16 @@ const AppActions = Object.assign({}, BaseAppActions, {
       identityFlag,
     })
   },
-  resendInvite(id) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.RESEND_INVITE,
-      id,
-    })
-  },
   resetPassword(data) {
     Dispatcher.handleViewAction({
       actionType: Actions.RESET_PASSWORD,
       ...data,
     })
   },
-  saveEnv(name) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.EDIT_ENVIRONMENT,
-      name,
-    })
-  },
-  searchFeatures(
-    projectId,
-    environmentId,
-    force,
-    search,
-    sort,
-    filter,
-    pageSize,
-  ) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.SEARCH_FLAGS,
-      environmentId,
-      filter,
-      force,
-      pageSize,
-      projectId,
-      search,
-      sort,
-    })
-  },
   selectOrganisation(id) {
     Dispatcher.handleViewAction({
       actionType: Actions.SELECT_ORGANISATION,
       id,
-    })
-  },
-  toggleFlag(index, environments, comment, environmentFlags, projectFlags) {
-    Dispatcher.handleViewAction({
-      actionType: Actions.TOGGLE_FLAG,
-      comment,
-      environmentFlags,
-      environments,
-      index,
-      projectFlags,
     })
   },
   toggleUserFlag(params) {

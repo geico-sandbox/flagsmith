@@ -1,5 +1,9 @@
+import find from 'lodash/find'
+import findIndex from 'lodash/findIndex'
+import keyBy from 'lodash/keyBy'
+import map from 'lodash/map'
+import throttle from 'lodash/throttle'
 import Constants from 'common/constants'
-import { getIsWidget } from 'components/pages/WidgetPage'
 import ProjectStore from './project-store'
 import {
   createAndSetFeatureVersion,
@@ -150,7 +154,7 @@ const controller = {
           store.model = {
             features: features.results,
             keyedEnvironmentFeatures:
-              environmentFeatures && _.keyBy(environmentFeatures, 'feature'),
+              environmentFeatures && keyBy(environmentFeatures, 'feature'),
           }
           store.model.lastSaved = new Date().valueOf()
           getStore().dispatch(
@@ -186,7 +190,7 @@ const controller = {
           onComplete(res)
         }
         if (store.model?.features) {
-          const index = _.findIndex(store.model.features, { id: flag.id })
+          const index = findIndex(store.model.features, { id: flag.id })
           store.model.features[index] = controller.parseFlag(flag)
           store.model.lastSaved = new Date().valueOf()
           getStore().dispatch(
@@ -458,12 +462,12 @@ const controller = {
             if (store.model?.keyedEnvironmentFeatures) {
               store.model.keyedEnvironmentFeatures[projectFlag.id] = res
               if (segmentRes) {
-                const feature = _.find(
+                const feature = find(
                   store.model.features,
                   (f) => f.id === projectFlag.id,
                 )
                 if (feature) {
-                  feature.feature_segments = _.map(
+                  feature.feature_segments = map(
                     segmentRes.feature_segments,
                     (segment) => ({
                       ...segment,
@@ -930,7 +934,7 @@ const controller = {
 
               store.model = {
                 features: features.results.map(controller.parseFlag),
-                keyedEnvironmentFeatures: _.keyBy(
+                keyedEnvironmentFeatures: keyBy(
                   environmentFeatures,
                   'feature',
                 ),
@@ -938,9 +942,7 @@ const controller = {
               store.loaded()
             })
             .catch((e) => {
-              if (!getIsWidget()) {
-                document.location.href = '/404?entity=environment'
-              }
+              document.location.href = '/404?entity=environment'
               API.ajaxHandler(store, e)
             })
         },
@@ -958,25 +960,7 @@ const controller = {
         })),
     }
   },
-  removeFlag: (projectId, flag) => {
-    store.saving()
-    API.trackEvent(Constants.events.REMOVE_FEATURE)
-    return data
-      .delete(`${Project.api}projects/${projectId}/features/${flag.id}/`)
-      .then(() => {
-        store.model.features = _.filter(
-          store.model.features,
-          (f) => f.id !== flag.id,
-        )
-        store.model.lastSaved = new Date().valueOf()
-        getStore().dispatch(
-          projectFlagService.util.invalidateTags(['ProjectFlag']),
-        )
-        store.saved({})
-        store.trigger('removed', flag)
-      })
-  },
-  searchFeatures: _.throttle(
+  searchFeatures: throttle(
     (search, environmentId, projectId, filter, pageSize) => {
       store.search = encodeURIComponent(search || '')
       controller.getFeatures(
@@ -1023,33 +1007,6 @@ store.dispatcherIndex = Dispatcher.register(store, (payload) => {
   const action = payload.action // this is our action from handleViewAction
   const projectId = parseInt(action.projectId)
   switch (action.actionType) {
-    case Actions.SEARCH_FLAGS: {
-      if (action.sort) {
-        store.sort = action.sort
-      }
-      controller.searchFeatures(
-        action.search,
-        action.environmentId,
-        projectId,
-        action.filter,
-        action.pageSize,
-      )
-      break
-    }
-    case Actions.GET_FLAGS:
-      store.search = encodeURIComponent(action.search || '')
-      if (action.sort) {
-        store.sort = action.sort
-      }
-      controller.getFeatures(
-        projectId,
-        action.environmentId,
-        action.force,
-        action.page,
-        action.filter,
-        action.pageSize,
-      )
-      break
     case Actions.REFRESH_FEATURES:
       if (
         projectId === store.projectId &&
@@ -1096,9 +1053,6 @@ store.dispatcherIndex = Dispatcher.register(store, (payload) => {
       break
     case Actions.EDIT_FEATURE_MV:
       controller.editFeatureMv(projectId, action.flag, action.onComplete)
-      break
-    case Actions.REMOVE_FLAG:
-      controller.removeFlag(projectId, action.flag)
       break
     default:
   }

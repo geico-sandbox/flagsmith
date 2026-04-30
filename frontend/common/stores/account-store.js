@@ -1,4 +1,8 @@
 import { matchPath } from 'react-router-dom'
+import filter from 'lodash/filter'
+import find from 'lodash/find'
+import findIndex from 'lodash/findIndex'
+import get from 'lodash/get'
 import { storageGet, storageSet } from 'common/safeLocalStorage'
 import Dispatcher from 'common/dispatcher/dispatcher'
 import BaseStore from './base/_store'
@@ -8,6 +12,8 @@ import dataRelay from 'data-relay'
 import { sortBy } from 'lodash'
 import Project from 'common/project'
 import { getStore } from 'common/store'
+import { setSelectedOrganisationId } from 'common/selectedOrganisationSlice'
+import { hidePylon, identifyChatUser } from 'common/loadChat'
 import { service } from 'common/service'
 import { getBuildVersion } from 'common/services/useBuildVersion'
 import { createOnboardingSupportOptIn } from 'common/services/useOnboardingSupportOptIn'
@@ -125,7 +131,7 @@ const controller = {
     data
       .delete(`${Project.api}organisations/${store.organisation.id}/`)
       .then(() => {
-        store.model.organisations = _.filter(
+        store.model.organisations = filter(
           store.model.organisations,
           (org) => org.id !== store.organisation.id,
         )
@@ -149,7 +155,7 @@ const controller = {
     data
       .put(`${Project.api}organisations/${store.organisation.id}/`, org)
       .then((res) => {
-        const idx = _.findIndex(store.model.organisations, {
+        const idx = findIndex(store.model.organisations, {
           id: store.organisation.id,
         })
         if (idx !== -1) {
@@ -304,8 +310,10 @@ const controller = {
 
   selectOrganisation: (id) => {
     API.setCookie('organisation', `${id}`)
-    store.organisation = _.find(store.model.organisations, { id })
+    store.organisation = find(store.model.organisations, { id })
+    getStore().dispatch(setSelectedOrganisationId(id))
     store.changed()
+    identifyChatUser()
   },
 
   setToken: (token) => {
@@ -340,6 +348,9 @@ const controller = {
             AppActions.getOrganisation(orgId)
           }
         }
+        if (store.organisation?.id) {
+          getStore().dispatch(setSelectedOrganisationId(store.organisation.id))
+        }
       }
 
       AsyncStorage.setItem('user', JSON.stringify(store.model))
@@ -364,6 +375,7 @@ const controller = {
       ).finally(() => {
         API.setCookie('t', '')
         data.setToken(null)
+        hidePylon()
         API.reset().finally(() => {
           store.model = user
           store.organisation = null
@@ -459,8 +471,8 @@ const store = Object.assign({}, BaseStore, {
     return (
       store.model &&
       store.model.organisations &&
-      _.get(
-        _.find(store.model.organisations, (org) =>
+      get(
+        find(store.model.organisations, (org) =>
           id
             ? org.id === id
             : org.id === (store.organisation && store.organisation.id),
@@ -477,7 +489,7 @@ const store = Object.assign({}, BaseStore, {
   },
   getPlans() {
     if (!store.model) return []
-    return _.filter(
+    return filter(
       store.model.organisations.map(
         (org) => org.subscription && org.subscription.plan,
       ),

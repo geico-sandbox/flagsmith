@@ -76,6 +76,7 @@ addopts = [
   '--dist=worksteal',
 ]
 console_output_style = 'count'
+log_level = 'INFO'
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
@@ -168,16 +169,16 @@ django-axes = "^8.1.0"
 pydantic = "^2.12.0"
 pydantic-collections = "^0.6.0"
 pyngo = "~2.4.1"
-flagsmith = "^5.1.1"
-openfeature-sdk = ">=0.6.0,<0.9.0"
-openfeature-provider-flagsmith = ">=0.1.6"
+flagsmith = "^5.3.0"
+openfeature-sdk = ">=0.9.0,<0.10.0"
+openfeature-provider-flagsmith = ">=0.2.0"
 python-gnupg = "^0.5.1"
 django-redis = "^5.4.0"
 pygithub = "~2.8"
 hubspot-api-client = "^12.0.0"
 djangorestframework-dataclasses = "^1.3.1"
 pyotp = "^2.9.0"
-flagsmith-common = { version = ">=3.5.0,<4", extras = [
+flagsmith-common = { version = ">=3.8.2,<4", extras = [
   "common-core",
   "flagsmith-schemas",
   "task-processor",
@@ -212,7 +213,7 @@ flagsmith-ldap = { git = "https://github.com/flagsmith/flagsmith-ldap", tag = "v
 optional = true
 
 [tool.poetry.group.workflows.dependencies]
-workflows-logic = { git = "https://github.com/flagsmith/flagsmith-workflows", tag = "v3.3.2" }
+workflows-logic = { git = "https://github.com/flagsmith/flagsmith-workflows", tag = "v3.4.0" }
 
 [tool.poetry.group.licensing]
 optional = true

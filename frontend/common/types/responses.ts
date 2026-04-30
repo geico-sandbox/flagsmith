@@ -292,6 +292,35 @@ export type GithubResource = {
   draft: boolean
 }
 
+export type GitLabConfiguration = {
+  id: number
+  gitlab_instance_url: string
+}
+
+export type GitLabProject = {
+  id: number
+  name: string
+  path_with_namespace: string
+}
+
+export type GitLabIssue = {
+  web_url: string
+  id: number
+  title: string
+  iid: number
+  state: string
+}
+
+export type GitLabMergeRequest = {
+  web_url: string
+  id: number
+  title: string
+  iid: number
+  state: string
+  merged: boolean
+  draft: boolean
+}
+
 export type GithubPaginatedRepos<T> = {
   total_count: number
   repository_selection: string
@@ -652,7 +681,6 @@ export type FeatureListProviderActions = {
     projectFlag: ProjectFlag,
     environmentFlags: FeatureState | undefined,
   ) => void
-  removeFlag: (projectId: number, projectFlag: ProjectFlag) => void
 }
 
 export type AuthType = 'EMAIL' | 'GITHUB' | 'GOOGLE'
@@ -695,6 +723,7 @@ export type Account = {
   pylon_email_signature: string
   sign_up_type: SignupType
   id: number
+  uuid: string
   email: string
   auth_type: AuthType
   is_superuser: boolean
@@ -1211,14 +1240,22 @@ export type Res = {
   releasePipeline: SingleReleasePipeline
   pipelineStages: PagedResponse<PipelineStage>
   featureCodeReferences: FeatureCodeReferences[]
-  featureAnalytics: ({
-    day: string
-  } & {
-    [environmentId: string]: number
-  })[]
+  featureAnalytics: {
+    chartData: ({
+      day: string
+    } & {
+      [environmentId: string]: number
+    })[]
+    rawEntries: Res['environmentAnalytics']
+  }
   environmentAnalytics: {
     day: string
     count: number
+    labels?: {
+      user_agent?: string | null
+      client_application_name?: string | null
+      client_application_version?: string | null
+    } | null
   }[]
   featureList: {
     results: ProjectFlag[]
@@ -1267,5 +1304,10 @@ export type Res = {
   processOAuthConsent: {
     redirect_uri: string
   }
+  integration: (ActiveIntegration & Record<string, any>)[]
+  gitlabConfiguration: GitLabConfiguration[]
+  gitlabProjects: PagedResponse<GitLabProject>
+  gitlabIssues: PagedResponse<GitLabIssue>
+  gitlabMergeRequests: PagedResponse<GitLabMergeRequest>
   // END OF TYPES
 }
